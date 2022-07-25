@@ -5,9 +5,9 @@ namespace delivery_system_api.Domain.Repositories
     public interface IOrderProductItemRepository
     {
         Task<IEnumerable<OrderProductItem>> ListAsync();
-        Task AddAsync(OrderProductItem orderProductItem);
-        Task Update(OrderProductItem orderProductItem);
+        void Add(OrderProductItem orderProductItem);
+        void Update(OrderProductItem orderProductItem);
         Task<OrderProductItem> GetByIdAsync(int id);
-        Task Delete(OrderProductItem orderProductItem);
+        void Delete(OrderProductItem orderProductItem);
     }
 }

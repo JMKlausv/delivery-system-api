@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using delivery_system_api.Domain.Models;
+using delivery_system_api.Extensions;
 using delivery_system_api.Resources;
 
 namespace delivery_system_api.MappingProfiles
@@ -17,6 +18,8 @@ namespace delivery_system_api.MappingProfiles
             // CreateMap<OrderResource, Order>().ReverseMap();
             CreateMap<OrderResource, SaveOrderResource>();
             CreateMap<SaveOrderResource,Order>();
+            CreateMap<OrderProductItem, FetchOrdersProductItemResource>();
+            CreateMap<Order, FetchOrdersResource>();
         }
     }
 }

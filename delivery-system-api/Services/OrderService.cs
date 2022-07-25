@@ -55,7 +55,7 @@ namespace delivery_system_api.Services
                     orderItems.ToList().ForEach( async orderItem  =>
                     {
                         orderItem.OrderId = orderId;
-                        await _orderProductItemRepository.AddAsync(orderItem);
+                         _orderProductItemRepository.Add(orderItem);
                     });
                     
                    
@@ -103,9 +103,11 @@ namespace delivery_system_api.Services
            return await _orderRepository.GetByIdAsync(orderId);
         }
 
-        public async Task<IEnumerable<Order>> GetOrdersAsync()
+        public async Task<IEnumerable<FetchOrdersResource>> GetOrdersAsync()
         {
-            return await _orderRepository.ListAsync();  
+            var order = await _orderRepository.ListAsync();
+            var resource = _mapper.Map<IEnumerable<Order>, IEnumerable<FetchOrdersResource>>(order);
+            return resource;
         }
 
         public async Task<OrderResponse> UpdateOrderAsync(OrderResource resource, int id)
@@ -125,26 +127,53 @@ namespace delivery_system_api.Services
                     var order = _mapper.Map<SaveOrderResource, Order>(saveOrder);
                     order.Id = id;
                     await _orderRepository.Update(order);
-                    _context.SaveChanges();
+                  // await _context.SaveChangesAsync();
+                 await _unitOfWork.CompleteAsync();  
                    
                     //2.........updating order items
                     IEnumerable<OrderProductItemResource> orderItemsDto = resource.Products;
-                    IEnumerable<OrderProductItem> newOrderItems = _mapper.Map<IEnumerable<OrderProductItemResource>, IEnumerable<OrderProductItem>>(orderItemsDto);
-                    IEnumerable < OrderProductItem> existingItems = existingOrder.Products;
-                    existingItems.ToList().ForEach(async item =>
+                    List<OrderProductItem> newOrderItems = _mapper.Map<IEnumerable<OrderProductItemResource>, IEnumerable<OrderProductItem>>(orderItemsDto).ToList();
+                    List < OrderProductItem> existingItems = existingOrder.Products.ToList();
+                  /*  existingItems.ToList().ForEach(async item =>
                     {
-                        await _orderProductItemRepository.Delete(item);
-                        _context.SaveChanges();
+                         _orderProductItemRepository.Delete(item);
+                        // await _context.SaveChangesAsync();
+                        await _unitOfWork.CompleteAsync();
                     });
+                  */
+                    for (int j = 0; j < existingItems.Count; j++)
 
-                    newOrderItems.ToList().ForEach(async orderItem =>
                     {
-                       // orderItem.OrderId = id;
-                        await _orderProductItemRepository.AddAsync(orderItem);
-                        _context.SaveChanges();
 
-                    });
-                    
+                        var item = existingItems[j];
+
+                        item.OrderId = id;
+                         _orderProductItemRepository.Delete(item);
+                        await _unitOfWork.CompleteAsync();
+                    }
+
+
+                    /*    newOrderItems.ToList().ForEach(async orderItem =>
+                        {
+                           orderItem.OrderId = id;
+
+                            Console.WriteLine("this is the id of the orderrrr.......");
+                            Console.WriteLine(id);
+                            await _orderProductItemRepository.AddAsync(orderItem);
+                            // await  _context.SaveChangesAsync();
+                            await _unitOfWork.CompleteAsync();
+
+                        });
+
+                        */
+
+                    for (int i =0;i<newOrderItems.Count;i++)
+                    {
+                        var item = newOrderItems[i];
+                        item.OrderId = id;
+                         _orderProductItemRepository.Add(item);
+                        await _unitOfWork.CompleteAsync();
+                    }
 
                     //3..........updating order address table
                     OrderAddressResource orderAddressDto = resource.OrderAddress;
@@ -153,14 +182,16 @@ namespace delivery_system_api.Services
                     if(existingAddress == null)
                     {
                         await  _orderAddressRepository.AddAsync(newOrderAddress);
-                        _context.SaveChanges();
+                        //_context.SaveChanges();
+                        await _unitOfWork.CompleteAsync();
                     }
                     else
                     {
                         newOrderAddress.Id= existingOrder.OrderAddress.Id;
                         newOrderAddress.OrderId = id;
                         await _orderAddressRepository.Update(newOrderAddress);
-                        _context.SaveChanges();
+                        // _context.SaveChanges();
+                        await _unitOfWork.CompleteAsync();
                     }
 
 
@@ -171,7 +202,8 @@ namespace delivery_system_api.Services
             catch (Exception ex)
             {
                    await  transaction.RollbackAsync();
-                return new OrderResponse($"Could not update order : {ex.Message}");
+
+                return new OrderResponse($"Could not update order : {ex.InnerException.Message}");
             }
             }
         }

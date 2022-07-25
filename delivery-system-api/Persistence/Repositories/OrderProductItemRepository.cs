@@ -13,35 +13,35 @@ namespace delivery_system_api.Persistence.Repositories
         {
           _context = context;
         }
-        public async Task AddAsync(OrderProductItem orderProductItem)
+        public void  Add(OrderProductItem orderProductItem)
         {
             _context.DetachLocal<OrderProductItem>(orderProductItem, orderProductItem.Id);
 
-            await _context.OrderProductItems.AddAsync(orderProductItem); 
+             _context.OrderProductItems.Add(orderProductItem); 
         }
 
-        public async Task Delete(OrderProductItem orderProductItem)
+        public   void Delete(OrderProductItem orderProductItem)
         {
             _context.DetachLocal<OrderProductItem>(orderProductItem, orderProductItem.Id);
 
-            _context.OrderProductItems.Remove(orderProductItem);
-            await _context.SaveChangesAsync();
+             _context.OrderProductItems.Remove(orderProductItem);
+
         }
 
         public async Task<OrderProductItem> GetByIdAsync(int id)
         {
-            return await  _context.OrderProductItems.FindAsync(id);
+            return await _context.OrderProductItems.FindAsync(id);
         }
 
         public async Task<IEnumerable<OrderProductItem>> ListAsync()
         {
-            return _context.OrderProductItems.ToList();
+            return  _context.OrderProductItems.ToList();
         }
 
-        public async Task Update(OrderProductItem orderProductItem)
+        public void Update(OrderProductItem orderProductItem)
         {
             _context.DetachLocal<OrderProductItem>(orderProductItem, orderProductItem.Id);
-            _context.OrderProductItems.Update(orderProductItem); 
+            _context.OrderProductItems.Update(orderProductItem);
         }
     }
 }

@@ -32,6 +32,7 @@ namespace delivery_system_api.Persistence.Repositories
 #pragma warning disable CS8603 // Possible null reference return.
             return await _context.Orders
                 .Include(o => o.OrderAddress)
+                .Include(o => o.Viechle)
                 .Include(o => o.Products).ThenInclude(p => p.Product)
                 .FirstOrDefaultAsync(o=>o.Id == id);
 #pragma warning restore CS8603 // Possible null reference return.
@@ -42,6 +43,7 @@ namespace delivery_system_api.Persistence.Repositories
  
  
             return await _context.Orders.Include(o => o.OrderAddress)
+                .Include(o => o.Viechle)
                 .Include(o => o.Products).ThenInclude(p => p.Product).ToListAsync();
         }
 

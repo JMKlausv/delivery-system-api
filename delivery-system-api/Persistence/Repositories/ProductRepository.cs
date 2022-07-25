@@ -44,7 +44,7 @@ namespace delivery_system_api.Persistence.Repositories
         {
            
 
-            return _context.products.Where(p => p.CategoryId == int.Parse( categoryId)); 
+            return _context.products.Where(p => p.CategoryId == int.Parse( categoryId)).Include(p => p.Category).ToList(); 
         }
     }
 }

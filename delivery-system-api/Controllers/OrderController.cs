@@ -70,7 +70,7 @@ namespace delivery_system_api.Controllers
 
         // GET: api/<ValuesController>
         [HttpGet]
-        public async Task<IEnumerable<Order>> Get()
+        public async Task<IEnumerable<FetchOrdersResource>> Get()
         {
             return await _orderService.GetOrdersAsync();
         }
@@ -82,7 +82,7 @@ namespace delivery_system_api.Controllers
 
         
             var response = await _orderService.UpdateOrderAsync(resource,id);
-            if (!response.IsSuccess)
+            if (!response.IsSuccess )
             {
                 return BadRequest(response.Message);
             }

@@ -6,7 +6,7 @@ namespace delivery_system_api.Domain.Services
 {
     public interface IOrderService
     {
-        Task<IEnumerable<Order>> GetOrdersAsync();
+        Task<IEnumerable<FetchOrdersResource>> GetOrdersAsync();
         Task<Order> GetOrderByIdAsync(int orderId);
         Task<OrderResponse> AddOrderAsync(OrderResource order);
         Task<OrderResponse> UpdateOrderAsync(OrderResource order,int id);

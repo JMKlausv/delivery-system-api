@@ -1,4 +1,6 @@
-﻿namespace delivery_system_api.Resources
+﻿using delivery_system_api.Domain.Models;
+
+namespace delivery_system_api.Resources
 {
     public class OrderProductItemResource
     {
